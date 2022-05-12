@@ -2,6 +2,10 @@ java chess game implementing alpha-beta pruned minimax AI
   
 alpha-beta-chess manual:  
   
+  
+All pieces have been implemented, as well as a few special moves (en passe), but not others (castling). At the moment, the method for determining check is a bit convoluted and buggy- checkmate detector does not work and certain moves create an infinite loop, forcing a restart. Additionally, the AI doesn't perform as well as expected, but it still will capture pieces given the opportunity. Regardless, the AI could theoretically be disabled to provide a complete 2 human-player chess game.
+  
+  
 This chess program has been written entirely in Java.  
 CLASSES 		AND 		DESCRIPTIONS:  
 Chess					controller for view and model  
