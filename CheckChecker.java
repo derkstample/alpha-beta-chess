@@ -105,94 +105,68 @@ public class CheckChecker {
     }
     public boolean BlackInCheck() {
         boolean checkmate = true;
-        // Check if black is in check
         if (!this.checkCheck(true)) return false;
-        
-        // If yes, check if king can evade
+        // threat can be evaded?
         if (canEvade(wMoves, bk)) checkmate = false;
-        
-        // If no, check if threat can be captured
+        // threat can be captured?
         ArrayList<Piece> threats = wMoves.get(bk.getPosition());
         if (canCapture(bMoves, threats, bk)) checkmate = false;
-        
-        // If no, check if threat can be blocked
+        // threat can be blocked?
         if (canBlock(threats, bMoves, bk)) checkmate = false;
-        
-        // If no possible ways of removing check, checkmate occurred
         return checkmate;
     }
     public boolean WhiteInCheck() {
         boolean checkmate = true;
-        // Check if white is in check
         if (!this.checkCheck(false)) return false;
-        
-        // If yes, check if king can evade
+        // threat can be evaded?
         if (canEvade(bMoves, wk)) checkmate = false;
-        
-        // If no, check if threat can be captured
+        // threat can be captured?
         ArrayList<Piece> threats = bMoves.get(wk.getPosition());
         if (canCapture(wMoves, threats, wk)) checkmate = false;
-        
-        // If no, check if threat can be blocked
+        // threat can be blocked?
         if (canBlock(threats, wMoves, wk)) checkmate = false;
-        
-        // If no possible ways of removing check, checkmate occurred
         return checkmate;
     }
-    
-    /*
-     * Helper method to determine if the king can evade the check.
-     * Gives a false positive if the king can capture the checking piece.
-     */
-    private boolean canEvade(Map<Square,ArrayList<Piece>> tMoves, King tKing) {
-        boolean evade = false;
-        ArrayList<Square> kingsMoves = tKing.getLegalMoves(b);
-        Iterator<Square> iterator = kingsMoves.iterator();
-        
+    private boolean canEvade(Map<Square,ArrayList<Piece>> tMoves, King k) {
+        //returns whether or not the threatened king can evade the threat
+        boolean evade=false;
+        ArrayList<Square> kingsMoves=k.getLegalMoves(b);
+        Iterator<Square> iterator=kingsMoves.iterator();
         // If king is not threatened at some square, it can evade
-        while (iterator.hasNext()) {
-            Square sq = iterator.next();
-            if (!tryMove(tKing, sq)) continue;
-            if (tMoves.get(sq).isEmpty()) {
-                movableSquares.add(sq);
-                evade = true;
+        while(iterator.hasNext()){
+            Square threatSquare = iterator.next();
+            if(!tryMove(k,threatSquare))continue;
+            if(tMoves.get(threatSquare).isEmpty()){
+                movableSquares.add(threatSquare);
+                evade=true;
             }
         }
-        
         return evade;
     }
-    
-    /*
-     * Helper method to determine if the threatening piece can be captured.
-     */
-    private boolean canCapture(Map<Square,ArrayList<Piece>> poss, 
-            ArrayList<Piece> threats, King k) {
-        
+
+    private boolean canCapture(Map<Square,ArrayList<Piece>> poss,ArrayList<Piece> threats,King k){
+        //returns whether or not the threatened king can capture the threat
         boolean capture = false;
-        if (threats.size() == 1) {
-            Square sq = threats.get(0).getPosition();
-            
-            if (k.getLegalMoves(b).contains(sq)) {
-                movableSquares.add(sq);
-                if (tryMove(k, sq)) {
-                    capture = true;
+        if(threats.size()==1){
+            Square threatSquare=threats.get(0).getPosition();
+            if(k.getLegalMoves(b).contains(threatSquare)) {
+                movableSquares.add(threatSquare);
+                if(tryMove(k,threatSquare)){
+                    capture=true;
                 }
             }
-            
-            ArrayList<Piece> caps = poss.get(sq);
-            ArrayList<Piece> capturers = new ArrayList<Piece>();
+            ArrayList<Piece> caps=poss.get(threatSquare);
+            ArrayList<Piece> capturers=new ArrayList<Piece>();
             capturers.addAll(caps);
-            
-            if (!capturers.isEmpty()) {
-                movableSquares.add(sq);
-                for (Piece p : capturers) {
-                    if (tryMove(p, sq)) {
-                        capture = true;
+            if(!capturers.isEmpty()){
+                movableSquares.add(threatSquare);
+                for(Piece p:capturers){
+                    if(tryMove(p,threatSquare)){
+                        capture=true;
                     }
                 }
             }
         }
-        
         return capture;
     }
 
